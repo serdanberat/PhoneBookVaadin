@@ -1,0 +1,15 @@
+{
+  "productionMode": false,
+  "useDeprecatedV14Bootstrapping": false,
+  "eagerServerLoad": false,
+  "npmFolder": "/Users/berat/Downloads/VaadinMySQL",
+  "generatedFolder": "/Users/berat/Downloads/VaadinMySQL/target/frontend",
+  "frontendFolder": "/Users/berat/Downloads/VaadinMySQL/frontend",
+  "connect.javaSourceFolder": "/Users/berat/Downloads/VaadinMySQL/src/main/java",
+  "connect.applicationProperties": "/Users/berat/Downloads/VaadinMySQL/src/main/resources/application.properties",
+  "connect.openApiFile": "/Users/berat/Downloads/VaadinMySQL/target/generated-resources/openapi.json",
+  "project.frontend.generated": "/Users/berat/Downloads/VaadinMySQL/frontend/generated",
+  "pnpm.enable": true,
+  "require.home.node": false,
+  "build.folder": "target"
+}
