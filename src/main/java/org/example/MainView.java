@@ -12,168 +12,183 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.Route;
+import org.example.Dao.PersonInformationDao;
+import org.example.Dao.PersonInformationDaoImpl;
+import org.example.Dto.PersonInformationsDto;
 import org.example.Entity.PersonInformations;
 import org.example.Services.MyCrudService;
 
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Route
 public class MainView extends VerticalLayout {
 
-    TextField name = new TextField("Name");
-    TextField street = new TextField("Street");
-    TextField city = new TextField("City");
-    TextField country = new TextField("Country");
-    TextField email = new TextField("E-Mail");
-    TextField phone = new TextField("Phone");
-    TextField id = new TextField("Phone");
+	private PersonInformationsDto personInformationsDto = new PersonInformationsDto();
 
-    MyCrudService myCrudService = new MyCrudService();
-    static ConcurrentHashMap<Integer, PersonInformations> data = new ConcurrentHashMap<>();
-    static AtomicInteger atomicIntegerId = new AtomicInteger(0);
+	private MyCrudService myCrudService;
 
-    Binder<PersonInformations> binder = new Binder<>(PersonInformations.class);
-    Grid<PersonInformations> grid = new Grid<>();
-    Crud<PersonInformations> crud = new Crud<>(PersonInformations.class, createGrid(grid), createCrudEditor());
+	private final TextField name = new TextField("Name");
 
-    private static boolean changeFlag = true;
+	private final TextField street = new TextField("Street");
 
-    public MainView() throws SQLException {
+	private final TextField city = new TextField("City");
 
-        // myCrudService.createTestData();
+	private final TextField country = new TextField("Country");
 
-        if (changeFlag) {
-            myCrudService.setMaxAtomicID(atomicIntegerId);
-            myCrudService.fetchData(data);
-            changeFlag = false;
-        }
+	private final TextField email = new TextField("E-Mail");
 
-        CrudI18n customI18n = CrudI18n.createDefault();
-        customI18n.setEditItem("Update Customer");
-        customI18n.setNewItem("New Customer");
+	private final TextField phone = new TextField("Phone");
 
-        binder.setValidatorsDisabled(false);
+	private final TextField id = new TextField("Phone");
 
-        //LISTENERS
+	private Binder<PersonInformations> binder = new Binder<>(PersonInformations.class);
 
-        crud.addEditListener(personInformationsEditEvent -> binder.setValidatorsDisabled(true));
+	private Grid<PersonInformations> grid = new Grid<>();
 
-        crud.addNewListener(personInformationsNewEvent -> {
-            binder.setValidatorsDisabled(false);
-            binder.forField(phone).withValidator(v -> myCrudService.isPhoneUnique(data, v), "Phone Must Be Unique").bind("phone");
-        });
+	private Crud<PersonInformations> crud = new Crud<>(PersonInformations.class, createGrid(grid), createCrudEditor());
 
-        crud.addCancelListener(personInformationsCancelEvent -> binder.setValidatorsDisabled(true));
+	private static boolean changeFlag = true;
 
-        crud.addSaveListener(saveEvent -> {
-            binder.setValidatorsDisabled(true);
-            PersonInformations toSave = saveEvent.getItem();
-            // Save the item to memory
-            myCrudService.addPerson(atomicIntegerId,toSave,data);
+	public MainView() throws SQLException {
 
-            grid.setItems(data.values());
-        });
+		// myCrudService.createTestData();
 
-        crud.addDeleteListener(deleteEvent -> {
-            // Delete the item in the database
-            PersonInformations toDelete = deleteEvent.getItem();
-            myCrudService.deletePerson(toDelete,data);
-          //  data.remove(deleteEvent.getItem().getId());
-            grid.setItems(data.values());
-        });
+		CrudI18n customI18n = CrudI18n.createDefault();
+		customI18n.setEditItem("Update Customer");
+		customI18n.setNewItem("New Customer");
 
-        grid.setItems( data.values());
-        add(crud);
-    }
+		binder.setValidatorsDisabled(false);
 
-    private CrudEditor<PersonInformations> createCrudEditor() {
+		//LISTENERS
 
-        name.setRequiredIndicatorVisible(true);
-        phone.setRequiredIndicatorVisible(true);
+		crud.addEditListener(personInformationsEditEvent -> binder.setValidatorsDisabled(true));
 
-        FormLayout form = new FormLayout(name, street, city, email, country, phone);
+		crud.addNewListener(personInformationsNewEvent -> {
+			binder.setValidatorsDisabled(false);
+			binder.forField(phone).withValidator(v -> myCrudService.isPhoneUnique(v), "Phone Must Be Unique").bind("phone");
+		});
 
-        binder.forField(id).withConverter(
-                new StringToIntegerConverter(0, "integers only")).bind(PersonInformations::getId, PersonInformations::setId);
-        binder.bind(name, PersonInformations::getName, PersonInformations::setName);
-        binder.forField(name).asRequired("required!").bind("name");
-        binder.bind(street, PersonInformations::getStreet, PersonInformations::setStreet);
-        binder.bind(city, PersonInformations::getCity, PersonInformations::setCity);
-        binder.bind(email, PersonInformations::getEmail, PersonInformations::setEmail);
-        binder.bind(country, PersonInformations::getCountry, PersonInformations::setCountry);
-        binder.bind(phone, PersonInformations::getPhone, PersonInformations::setPhone);
-        binder.forField(phone).asRequired("required!").bind("phone");
+		crud.addCancelListener(personInformationsCancelEvent -> binder.setValidatorsDisabled(true));
 
-        return new BinderCrudEditor<>(binder, form);
-    }
+		crud.addSaveListener(saveEvent -> {
+			binder.setValidatorsDisabled(true);
+			PersonInformations toSave = saveEvent.getItem();
+			// Save the item to memory
+			myCrudService.addPerson(MyCrudService.atomicIntegerId, toSave, personInformationsDto.getData());
 
-    private Grid<PersonInformations> createGrid(Grid<PersonInformations> grid) {
+			grid.setItems(personInformationsDto.getData().values());
+		});
 
-        grid.addColumn(PersonInformations::getName).setHeader("Name").setKey("Name")
-                .setWidth("160px").setComparator(PersonInformations::getName);
-        grid.addColumn(PersonInformations::getPhone).setHeader("Phone").setKey("Phone");
+		crud.addDeleteListener(deleteEvent -> {
+			// Delete the item in the database
+			PersonInformations toDelete = deleteEvent.getItem();
+			myCrudService.deletePerson(toDelete, personInformationsDto.getData());
+			//  data.remove(deleteEvent.getItem().getId());
+			grid.setItems(personInformationsDto.getData().values());
+		});
 
-        configureFilter(grid, data);
+		grid.setItems(personInformationsDto.getData().values());
+		add(crud);
+	}
 
-        Crud.addEditColumn(grid);
+	private CrudEditor<PersonInformations> createCrudEditor() {
 
-        return grid;
-    }
+		name.setRequiredIndicatorVisible(true);
+		phone.setRequiredIndicatorVisible(true);
 
-    public void configureFilter(Grid<PersonInformations> grid, ConcurrentHashMap<Integer, PersonInformations> data) {
+		FormLayout form = new FormLayout(name, street, city, email, country, phone);
 
-        HeaderRow filterRow = grid.appendHeaderRow();
+		binder.forField(id).withConverter(
+				new StringToIntegerConverter(0, "integers only")).bind(PersonInformations::getId, PersonInformations::setId);
+		binder.bind(name, PersonInformations::getName, PersonInformations::setName);
+		binder.forField(name).asRequired("required!").bind("name");
+		binder.bind(street, PersonInformations::getStreet, PersonInformations::setStreet);
+		binder.bind(city, PersonInformations::getCity, PersonInformations::setCity);
+		binder.bind(email, PersonInformations::getEmail, PersonInformations::setEmail);
+		binder.bind(country, PersonInformations::getCountry, PersonInformations::setCountry);
+		binder.bind(phone, PersonInformations::getPhone, PersonInformations::setPhone);
+		binder.forField(phone).asRequired("required!").bind("phone");
 
-        TextField nameFilter = new TextField();
-        TextField phoneFilter = new TextField();
+		return new BinderCrudEditor<>(binder, form);
+	}
 
-        //Name Filter
+	private Grid<PersonInformations> createGrid(Grid<PersonInformations> grid) {
 
-        nameFilter.setSizeFull();
-        nameFilter.setPlaceholder("Filter");
-        nameFilter.setClearButtonVisible(true);
-        nameFilter.getElement().setAttribute("focus-target", "");
+		if (changeFlag) {
+			myCrudService = new MyCrudService();
+			myCrudService.setMaxAtomicID(myCrudService.atomicIntegerId);
+			personInformationsDto.setData();
+			grid.setItems(personInformationsDto.getData().values());
+			myCrudService.copyData(personInformationsDto.getData());
+			changeFlag = false;
+		}
 
-        //Phone Filter
+		grid.addColumn(PersonInformations::getName).setHeader("Name").setKey("Name")
+			.setWidth("160px").setComparator(PersonInformations::getName);
+		grid.addColumn(PersonInformations::getPhone).setHeader("Phone").setKey("Phone");
 
-        phoneFilter.setSizeFull();
-        phoneFilter.setPlaceholder("Filter");
-        phoneFilter.setClearButtonVisible(true);
-        phoneFilter.getElement().setAttribute("focus-target", "");
+		configureFilter(grid, personInformationsDto.getData());
 
-        //Adding filters to grid
-        filterRow.getCell(grid.getColumnByKey("Name")).setComponent(nameFilter);
-        filterRow.getCell(grid.getColumnByKey("Phone")).setComponent(phoneFilter);
+		Crud.addEditColumn(grid);
 
-        nameFilter.addValueChangeListener(e -> filterColumns(grid, data, nameFilter, phoneFilter));
-        phoneFilter.addValueChangeListener(e -> filterColumns(grid, data, nameFilter, phoneFilter));
+		return grid;
+	}
 
-    }
+	public void configureFilter(Grid<PersonInformations> grid, ConcurrentHashMap<Integer, PersonInformations> data) {
 
-    private void filterColumns(Grid<PersonInformations> grid, ConcurrentHashMap<Integer, PersonInformations> data, TextField nameFilter, TextField phoneFilter) {
+		HeaderRow filterRow = grid.appendHeaderRow();
 
-        String q1 = nameFilter.getValue();
-        String q2 = phoneFilter.getValue();
+		TextField nameFilter = new TextField();
+		TextField phoneFilter = new TextField();
 
-        if (!q1.equals("") && q2.equals(""))
-            grid.setItems(data.values().stream().filter(c -> c.getName().equalsIgnoreCase(nameFilter.getValue())));
+		//Name Filter
 
-        if (q1.equals("") && !q2.equals(""))
-            grid.setItems(data.values().stream().filter(c -> c.getPhone().equalsIgnoreCase(phoneFilter.getValue())));
+		nameFilter.setSizeFull();
+		nameFilter.setPlaceholder("Filter");
+		nameFilter.setClearButtonVisible(true);
+		nameFilter.getElement().setAttribute("focus-target", "");
 
-        if (!q1.equals("") && !q2.equals(""))
-            grid.setItems(data.values().stream().filter(c -> c.getName().equalsIgnoreCase(nameFilter.getValue()) && c.getPhone().equalsIgnoreCase(phoneFilter.getValue())));
+		//Phone Filter
 
-        if (q1.equals("") && q2.equals(""))
-            grid.setItems(data.values());
+		phoneFilter.setSizeFull();
+		phoneFilter.setPlaceholder("Filter");
+		phoneFilter.setClearButtonVisible(true);
+		phoneFilter.getElement().setAttribute("focus-target", "");
+
+		//Adding filters to grid
+		filterRow.getCell(grid.getColumnByKey("Name")).setComponent(nameFilter);
+		filterRow.getCell(grid.getColumnByKey("Phone")).setComponent(phoneFilter);
+
+		nameFilter.addValueChangeListener(e -> filterColumns(grid, data, nameFilter, phoneFilter));
+		phoneFilter.addValueChangeListener(e -> filterColumns(grid, data, nameFilter, phoneFilter));
+
+	}
+
+	private void filterColumns(Grid<PersonInformations> grid, ConcurrentHashMap<Integer, PersonInformations> data, TextField nameFilter, TextField phoneFilter) {
+
+		String q1 = nameFilter.getValue();
+		String q2 = phoneFilter.getValue();
+
+		if (!q1.equals("") && q2.equals("")) {
+			grid.setItems(data.values().stream().filter(c -> c.getName().equalsIgnoreCase(nameFilter.getValue())));
+		}
+
+		if (q1.equals("") && !q2.equals("")) {
+			grid.setItems(data.values().stream().filter(c -> c.getPhone().equalsIgnoreCase(phoneFilter.getValue())));
+		}
+
+		if (!q1.equals("") && !q2.equals("")) {
+			grid.setItems(
+					data.values().stream().filter(c -> c.getName().equalsIgnoreCase(nameFilter.getValue()) && c.getPhone().equalsIgnoreCase(phoneFilter.getValue())));
+		}
+
+		if (q1.equals("") && q2.equals("")) {
+			grid.setItems(data.values());
+		}
 
 
-    }
-
+	}
 
 
 }
-
-

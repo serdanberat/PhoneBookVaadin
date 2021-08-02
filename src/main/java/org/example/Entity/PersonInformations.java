@@ -1,84 +1,97 @@
 package org.example.Entity;
 
+import org.example.Dao.PersonInformationDao;
+
+import java.util.concurrent.ConcurrentHashMap;
+
 public class PersonInformations {
 
-    private String name;
-    private String street;
-    private String city;
-    private String country;
-    private String phone;
-    private String email;
-    private int id;
+	private String name;
 
-    public PersonInformations(){
+	private String street;
 
-    }
+	private String city;
 
-    public PersonInformations(int id,String name, String street, String city, String country, String phone, String email) {
-        setName(name);
-        setStreet(street);
-        setCity(city);
-        setCountry(country);
-        setPhone(phone);
-        setEmail(email);
-        setId(id);
+	private String country;
 
-    }
+	private String phone;
 
-    public int getId() {
-        return id;
-    }
+	private String email;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	private int id;
 
-    public String getName() {
-        return name;
-    }
+	PersonInformationDao personInformationDao;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public PersonInformations() {
 
-    public String getStreet() {
-        return street;
-    }
+	}
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
+	public PersonInformations(int id, String name, String street, String city, String country, String phone, String email) {
+		setName(name);
+		setStreet(street);
+		setCity(city);
+		setCountry(country);
+		setPhone(phone);
+		setEmail(email);
+		setId(id);
 
-    public String getCity() {
-        return city;
-    }
+	}
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public String getCountry() {
-        return country;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public String getStreet() {
+		return street;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public void setStreet(String street) {
+		this.street = street;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 
 }

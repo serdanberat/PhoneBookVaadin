@@ -6,22 +6,24 @@ import java.sql.SQLException;
 
 public class DbHandler {
 
-    private static final String url ="jdbc:mysql://localhost:3306/PhoneBook";
-    private static final String user ="root";
-    private static final String password ="Root123.";
+	private static final String url = "jdbc:mysql://localhost:3306/PhoneBook";
 
-    Connection conn;
+	private static final String user = "root";
 
-    public DbHandler(){
+	private static final String password = "Root123.";
 
-        try {
-            conn = DriverManager.getConnection(url, user, password);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
+	private static Connection conn = null;
 
-    public java.sql.Connection getConnection(){
-        return this.conn;
-    }
+	public DbHandler() {
+
+		try {
+			conn = DriverManager.getConnection(url, user, password);
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+	}
+
+	public static java.sql.Connection getConnection() {
+		return conn;
+	}
 }
