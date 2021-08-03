@@ -12,8 +12,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.Route;
-import org.example.Dao.PersonInformationDao;
-import org.example.Dao.PersonInformationDaoImpl;
 import org.example.Dto.PersonInformationsDto;
 import org.example.Entity.PersonInformations;
 import org.example.Services.MyCrudService;
@@ -40,7 +38,7 @@ public class MainView extends VerticalLayout {
 
 	private final TextField phone = new TextField("Phone");
 
-	private final TextField id = new TextField("Phone");
+	private final TextField id = new TextField("Id");
 
 	private Binder<PersonInformations> binder = new Binder<>(PersonInformations.class);
 
@@ -118,9 +116,8 @@ public class MainView extends VerticalLayout {
 		if (changeFlag) {
 			myCrudService = new MyCrudService();
 			myCrudService.setMaxAtomicID(myCrudService.atomicIntegerId);
-			personInformationsDto.setData();
-			grid.setItems(personInformationsDto.getData().values());
 			myCrudService.copyData(personInformationsDto.getData());
+			grid.setItems(personInformationsDto.getData().values());
 			changeFlag = false;
 		}
 

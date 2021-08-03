@@ -9,24 +9,21 @@ import org.example.Model.DbStatements;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class MyCrudService {
 
 	public static AtomicInteger atomicIntegerId = new AtomicInteger(0);
 
-	private Set<String> setCopyMap = new HashSet<>();
+	private final Set<String> setCopyMap = new HashSet<>();
 
-	private PersonInformationDao personInformationDao = new PersonInformationDaoImpl();
+	private final PersonInformationDao personInformationDao = new PersonInformationDaoImpl();
 
-	private DbHandler dbHandler = new DbHandler();
+	private final DbHandler dbHandler = new DbHandler();
 
 	public MyCrudService() {
 	}
@@ -37,9 +34,8 @@ public class MyCrudService {
 
 	public void copyData(ConcurrentHashMap<Integer, PersonInformations> data) {
 		Set set = data.entrySet();
-		Iterator i = set.iterator();
-		while (i.hasNext()) {
-			Map.Entry me = (Map.Entry) i.next();
+		for (Object o : set) {
+			Map.Entry me = (Map.Entry) o;
 			PersonInformations phone = (PersonInformations) me.getValue();
 			setCopyMap.add(phone.getPhone());
 		}

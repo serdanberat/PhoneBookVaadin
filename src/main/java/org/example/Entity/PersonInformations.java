@@ -1,9 +1,5 @@
 package org.example.Entity;
 
-import org.example.Dao.PersonInformationDao;
-
-import java.util.concurrent.ConcurrentHashMap;
-
 public class PersonInformations {
 
 	private String name;
@@ -19,8 +15,6 @@ public class PersonInformations {
 	private String email;
 
 	private int id;
-
-	PersonInformationDao personInformationDao;
 
 	public PersonInformations() {
 

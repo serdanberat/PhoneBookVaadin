@@ -3,13 +3,12 @@ package org.example.Dao;
 import org.example.DbHandler;
 import org.example.Entity.PersonInformations;
 
-import java.sql.ResultSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public interface PersonInformationDao {
 
-	public void fetchData(ConcurrentHashMap<Integer, PersonInformations> data);
+	public ConcurrentHashMap<Integer, PersonInformations> fetchData();
 
 	public void addPerson(AtomicInteger atomicIntegerId, PersonInformations toSave, ConcurrentHashMap<Integer, PersonInformations> data);
 

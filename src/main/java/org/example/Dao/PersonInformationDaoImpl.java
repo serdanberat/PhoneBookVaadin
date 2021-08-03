@@ -15,7 +15,9 @@ public class PersonInformationDaoImpl implements PersonInformationDao {
 
 	static DbHandler dbHandler = new DbHandler();
 
-	public void fetchData(ConcurrentHashMap<Integer, PersonInformations> data) {
+	private static ConcurrentHashMap<Integer, PersonInformations> data = new ConcurrentHashMap<>();
+
+	public ConcurrentHashMap<Integer, PersonInformations> fetchData() {
 
 		try (PreparedStatement stmt = dbHandler.getConnection().prepareStatement(DbStatements.getFetchAll())) {
 
@@ -27,9 +29,13 @@ public class PersonInformationDaoImpl implements PersonInformationDao {
 												resultSet.getString("country"), resultSet.getString("phone"), resultSet.getString("mail")));
 			}
 
+			return data;
+
 		} catch (SQLException throwables) {
 			throwables.printStackTrace();
 		}
+
+		return null;
 
 	}
 
@@ -108,10 +114,14 @@ public class PersonInformationDaoImpl implements PersonInformationDao {
 				Notification.show("Phone Number Already Exists,did not updated", 5280, Notification.Position.TOP_CENTER);
 				preparedStmtUpdatePhone.executeUpdate();
 
-				data.put(toSave.getId(), new PersonInformations(toSave.getId(), toSave.getName(), toSave.getStreet(), toSave.getCity(), toSave.getCountry(), oldPhone,
+				data.put(toSave.getId(), new PersonInformations(toSave.getId(), toSave.getName(), toSave.getStreet(), toSave.getCity(), toSave.getCountry(),
+																oldPhone,
 																toSave.getEmail()));
+
 			} else {
-				preparedStmtUpdate.executeUpdate();
+				synchronized (this) {
+					preparedStmtUpdate.executeUpdate();
+				}
 			}
 
 		} catch (SQLException throwables) {
