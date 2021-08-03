@@ -16,4 +16,6 @@ public interface PersonInformationDao {
 
 	public void deletePerson(PersonInformations toDelete, ConcurrentHashMap<Integer, PersonInformations> data);
 
+	public boolean checkPhone( String v);
+
 }

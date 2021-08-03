@@ -105,7 +105,6 @@ public class PersonInformationDaoImpl implements PersonInformationDao {
 			preparedStmtUpdatePhone.setInt(6, toSave.getId());
 
 			preparedStmtCheckPhone.setString(1, toSave.getPhone());
-			preparedStmtCheckPhone.setString(1, toSave.getPhone());
 
 			ResultSet record = preparedStmtCheckPhone.executeQuery();
 			record.next();
@@ -119,9 +118,9 @@ public class PersonInformationDaoImpl implements PersonInformationDao {
 																toSave.getEmail()));
 
 			} else {
-				synchronized (this) {
-					preparedStmtUpdate.executeUpdate();
-				}
+
+				preparedStmtUpdate.executeUpdate();
+
 			}
 
 		} catch (SQLException throwables) {
@@ -144,5 +143,26 @@ public class PersonInformationDaoImpl implements PersonInformationDao {
 
 	}
 
+
+	public boolean checkPhone( String v){
+
+		try(PreparedStatement preparedStmtCheckPhone = dbHandler.getConnection().prepareStatement(DbStatements.getCheckByPhone())){
+			preparedStmtCheckPhone.setString(1, v);
+
+			ResultSet record = preparedStmtCheckPhone.executeQuery();
+			record.next();
+
+			if (record.getInt("count") > 0)
+				return false;
+			else
+				return true;
+
+		}
+		catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+
+		return true;
+	}
 
 }

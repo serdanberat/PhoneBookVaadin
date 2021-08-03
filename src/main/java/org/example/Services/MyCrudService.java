@@ -1,8 +1,10 @@
 package org.example.Services;
 
+import com.vaadin.flow.component.crud.Crud;
 import org.example.Dao.PersonInformationDao;
 import org.example.Dao.PersonInformationDaoImpl;
 import org.example.DbHandler;
+import org.example.Dto.PersonInformationsDto;
 import org.example.Entity.PersonInformations;
 import org.example.Model.DbStatements;
 
@@ -25,21 +27,23 @@ public class MyCrudService {
 
 	private final DbHandler dbHandler = new DbHandler();
 
+
 	public MyCrudService() {
 	}
 
-	public boolean isPhoneUnique(String v) {
-		return !setCopyMap.contains(v);
+	public boolean isPhoneUnique( String v) {
+
+		return personInformationDao.checkPhone(v);
 	}
 
-	public void copyData(ConcurrentHashMap<Integer, PersonInformations> data) {
+	/*public void copyData(ConcurrentHashMap<Integer, PersonInformations> data) {
 		Set set = data.entrySet();
 		for (Object o : set) {
 			Map.Entry me = (Map.Entry) o;
 			PersonInformations phone = (PersonInformations) me.getValue();
 			setCopyMap.add(phone.getPhone());
 		}
-	}
+	}*/
 
 	public void setMaxAtomicID(AtomicInteger atomicIntegerId) {
 

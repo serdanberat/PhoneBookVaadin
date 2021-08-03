@@ -48,6 +48,7 @@ public class MainView extends VerticalLayout {
 
 	private static boolean changeFlag = true;
 
+
 	public MainView() throws SQLException {
 
 		// myCrudService.createTestData();
@@ -58,12 +59,15 @@ public class MainView extends VerticalLayout {
 
 		binder.setValidatorsDisabled(false);
 
+
 		//LISTENERS
 
-		crud.addEditListener(personInformationsEditEvent -> binder.setValidatorsDisabled(true));
+		crud.addEditListener(personInformationsEditEvent -> {
+			binder.setValidatorsDisabled(true); });
 
 		crud.addNewListener(personInformationsNewEvent -> {
 			binder.setValidatorsDisabled(false);
+			PersonInformations toCheck = personInformationsNewEvent.getItem();
 			binder.forField(phone).withValidator(v -> myCrudService.isPhoneUnique(v), "Phone Must Be Unique").bind("phone");
 		});
 
@@ -73,18 +77,21 @@ public class MainView extends VerticalLayout {
 			binder.setValidatorsDisabled(true);
 			PersonInformations toSave = saveEvent.getItem();
 			// Save the item to memory
+			changeFlag=true;
 			myCrudService.addPerson(MyCrudService.atomicIntegerId, toSave, personInformationsDto.getData());
-
 			grid.setItems(personInformationsDto.getData().values());
+
 		});
 
 		crud.addDeleteListener(deleteEvent -> {
-			// Delete the item in the database
-			PersonInformations toDelete = deleteEvent.getItem();
-			myCrudService.deletePerson(toDelete, personInformationsDto.getData());
-			//  data.remove(deleteEvent.getItem().getId());
-			grid.setItems(personInformationsDto.getData().values());
-		});
+
+			synchronized (deleteEvent) {
+				// Delete the item in the database
+				PersonInformations toDelete = deleteEvent.getItem();
+				myCrudService.deletePerson(toDelete, personInformationsDto.getData());
+				//  data.remove(deleteEvent.getItem().getId());
+				grid.setItems(personInformationsDto.getData().values());
+			}});
 
 		grid.setItems(personInformationsDto.getData().values());
 		add(crud);
@@ -116,7 +123,7 @@ public class MainView extends VerticalLayout {
 		if (changeFlag) {
 			myCrudService = new MyCrudService();
 			myCrudService.setMaxAtomicID(myCrudService.atomicIntegerId);
-			myCrudService.copyData(personInformationsDto.getData());
+//			personInformationsDto.getData();
 			grid.setItems(personInformationsDto.getData().values());
 			changeFlag = false;
 		}
